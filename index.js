@@ -34,17 +34,25 @@ class Derived {
   }
 
   get (k) {
-    let v = this._values[collate.toIndexableString(k)]
-    return v ? v.value : null
+    return this.getAll(k)[0]
   }
 
   getSource (k) {
+    return this.getAllSources(k)[0]
+  }
+
+  getAll (k) {
     let v = this._values[collate.toIndexableString(k)]
-    return v ? v.source : null
+    return v ? v.map(i => i.value) : []
+  }
+
+  getAllSources (k) {
+    let v = this._values[collate.toIndexableString(k)]
+    return v ? v.map(i => i.source) : []
   }
 
   keys () {
-    return Object.keys(this._values).map(is => collate.parseIndexableString(is))
+    return Object.keys(this._values).map(s => collate.parseIndexableString(s))
   }
 
   _clearBySourceKey (sourceKey) {
@@ -87,17 +95,16 @@ class Derived {
 
     this._bySourceKey[sourceKey] = this._bySourceKey[sourceKey] || []
     this._bySourceKey[sourceKey].push(idxKey)
-    this._values[idxKey] = {value: idxValue, source: sourceValue}
+    this._values[idxKey] = this._values[idxKey] || []
+    this._values[idxKey].push({value: idxValue, source: sourceValue})
 
     // magic to access indexed keys just like normal keys, should be the same as calling .get
-    if (typeof idxKey != 'object' || Array.isArray(idxKey)) {
-      Object.defineProperty(this, idxReadableKey, {
-        enumerable: true,
-        configurable: true,
-        writable: false,
-        value: this.get(idxReadableKey)
-      })
-    }
+    Object.defineProperty(this, idxReadableKey, {
+      enumerable: true,
+      configurable: true,
+      writable: false,
+      value: this.get(idxReadableKey)
+    })
   }
 }
 
