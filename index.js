@@ -10,9 +10,15 @@ class Derived {
     this._values = {}
     this._bySourceKey = {}
 
+    // hide fields so Object.keys work just like .keys().
+    let fields = ['_name', '_fn', '_rawSource', '_values', '_bySourceKey']
+    fields.forEach(name => Object.defineProperty(this, name, {
+      enumerable: false
+    }))
+
     // changing the function should trigger a massive recalc
     Object.defineProperty(this, 'fn', {
-      enumerable: true,
+      enumerable: false,
       configurable: false,
       set: n => {
         this._fn = n
@@ -46,6 +52,7 @@ class Derived {
     if (toClear) {
       toClear.forEach(idxKey => {
         delete this._values[idxKey]
+        delete this[collate.parseIndexableString(idxKey)]
       })
     }
 
@@ -75,12 +82,22 @@ class Derived {
     }
   }
 
-  _emitted (sourceKey, sourceValue, idxKey, idxValue) {
-    idxKey = collate.toIndexableString(idxKey)
+  _emitted (sourceKey, sourceValue, idxReadableKey, idxValue) {
+    let idxKey = collate.toIndexableString(idxReadableKey)
 
     this._bySourceKey[sourceKey] = this._bySourceKey[sourceKey] || []
     this._bySourceKey[sourceKey].push(idxKey)
     this._values[idxKey] = {value: idxValue, source: sourceValue}
+
+    // magic to access indexed keys just like normal keys, should be the same as calling .get
+    if (typeof idxKey != 'object' || Array.isArray(idxKey)) {
+      Object.defineProperty(this, idxReadableKey, {
+        enumerable: true,
+        configurable: true,
+        writable: false,
+        value: this.get(idxReadableKey)
+      })
+    }
   }
 }
 

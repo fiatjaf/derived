@@ -155,4 +155,12 @@ describe('basic', function () {
     let fn = () => { source.set('#86423', {empty: true}) }
     expect(fn).to.throw()
   })
+
+  it('should return the same values for Object.keys and .keys()', function () {
+    expect(source.comidas.keys()).to.deep.equal(Object.keys(source.comidas))
+  })
+
+  it('should get keys normally just like if getting with .get()', function () {
+    expect(source.comidas.get('#84572')).to.equal(source.comidas['#84572'])
+  })
 })
