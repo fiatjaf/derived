@@ -3,11 +3,28 @@
 const collate = require('pouchdb-collate')
 
 class Derived {
-  constructor (name, fn) {
-    this.name = name
+  constructor (rawSource, name, fn) {
+    this._name = name
     this._fn = fn
+    this._rawSource = rawSource
     this._values = {}
     this._bySourceKey = {}
+
+    // changing the function should trigger a massive recalc
+    Object.defineProperty(this, 'fn', {
+      enumerable: true,
+      configurable: false,
+      set: n => {
+        this._fn = n
+        for (var sourceKey in this._bySourceKey) {
+          this._clearBySourceKey(sourceKey)
+        }
+        for (var sourceKey in this._rawSource) {
+          this._addNewSource(sourceKey, this._rawSource[sourceKey])
+        }
+      },
+      get: () => this._fn
+    })
   }
 
   get (k) {
@@ -93,7 +110,7 @@ module.exports = class Source {
   }
 
   derived (idxName, fn) {
-    this._derived[idxName] = new Derived(idxName, fn)
+    this._derived[idxName] = new Derived(this._raw, idxName, fn)
 
     for (let k in this._raw) {
       this.calcDerived(idxName, k)

@@ -22,7 +22,6 @@ describe('basic', function () {
     source.set('4398756', {name: 'bananas', color: 'yellow'})
     source.set('4985232', {name: 'uvas', color: 'grená'})
     source.derived('byColor', (k, v) => [v.color, v])
-    source.derived('byColor2', (k, v) => v.color)
     expect(source.byColor.get('yellow')).to.deep.equal({name: 'bananas', color: 'yellow'})
     expect(source.byColor.keys()).to.include.members(['yellow', 'grená'])
   })
@@ -110,6 +109,23 @@ describe('basic', function () {
     })
   })
 
+  it('should recalc everything when the function is changed', function () {
+    let comidas = source.comidas
+    let prevFn = comidas.fn
+
+    source.comidas.fn = function (k, v) {
+      v.comidas.forEach(comida => {
+        if (comida.subtipo)
+          this.emit(comida.nome, comida.subtipo)
+      })
+    }
+
+    expect(comidas.get('pão')).to.equal('sovado')
+    expect(comidas.get('água')).to.not.exit
+
+    comidas.fn = prevFn
+  })
+
   it('should add an remove correctly from the complex index', function () {
     source.set('#43987', {
       id: '#43987',
@@ -137,6 +153,6 @@ describe('basic', function () {
 
   it('should error when there is an error on an index function', function () {
     let fn = () => { source.set('#86423', {empty: true}) }
-    expect(fn).to.throw(/forEach/)
+    expect(fn).to.throw()
   })
 })
