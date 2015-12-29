@@ -1,6 +1,8 @@
 "use strict"
 
 const collate = require('pouchdb-collate')
+const O = require('object-path')
+
 const Derived = require('./derived')
 
 module.exports = class Source {
@@ -9,23 +11,50 @@ module.exports = class Source {
     this._derived = {}
   }
 
-  set (k, v) {
-    this._raw[k] = v
-    this.changed(k)
-  }
-
-  unset (k) {
-    delete this._raw[k]
-    this.changed(k)
-  }
-
-  get (k) {
-    if (!k) return this._raw
-    return this._raw[k]
-  }
-
   keys () {
     return Object.keys(this._raw)
+  }
+
+  get (k, d) {
+    return O.get(this._raw, k, d)
+  }
+
+  has (k) {
+    return O.has(this._raw, k)
+  }
+
+  coalesce (ks, d) {
+    return O.coalesce(O, this._raw, ks, d)
+  }
+
+  set (k, v) {
+    O.set(this._raw, k, v)
+    this.changed(k)
+  }
+
+  del (k) {
+    O.del(this._raw, k)
+    this.changed(k)
+  }
+
+  empty (k) {
+    O.empty(k)
+    this.changed(k)
+  }
+
+  insert (k, v, p) {
+    O.insert(this._raw, k, v, p)
+    this.changed(k)
+  }
+
+  push (k, v) {
+    O.push(this._raw, k, v)
+    this.changed(k)
+  }
+
+  ensureExists (k, d) {
+    O.ensureExists(this._raw, k, d)
+    this.changed(k)
   }
 
   derived (idxName, fn) {
@@ -44,6 +73,7 @@ module.exports = class Source {
   }
 
   changed (k) {
+    k = k.split('.')[0]
     for (var idxName in this._derived) {
       this.calcDerived(idxName, k)
     }

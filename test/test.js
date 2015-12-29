@@ -46,7 +46,7 @@ describe('basic', function () {
     })
 
     it('should remove keys from the index when removed from the source', function () {
-      source.unset('4398756')
+      source.del('4398756')
       expect(source.byColor.getSource('yellow')).to.not.exist
       expect(source.byColor.keys()).to.include.members(['grená'])
       expect(source.byColor.keys()).to.have.length(1)
@@ -147,7 +147,15 @@ describe('basic', function () {
       expect(source.comidas.keys()).to.have.length(4)
       expect(source.comidas.keys()).to.include.members(['#84572', '#03813', '#69472', '#98725'])
 
-      source.unset('#43987')
+      source.push('#43987.comidas', {id: '#58963', nome: 'pimenta', subtipo: 'calabresa'})
+      expect(source.comidas.keys()).to.have.length(5)
+      expect(source.comidas.keys()).to.include.members(['#84572', '#03813', '#69472', '#98725', '#58963'])
+
+      source.del('#43987.comidas.3')
+      expect(Object.keys(source.comidas)).to.have.length(4)
+      expect(source.comidas.keys()).to.include.members(['#84572', '#03813', '#69472', '#98725'])
+
+      source.del('#43987')
       expect(source.comidas.keys()).to.have.length(1)
       expect(source.comidas.keys()).to.include.members(['#84572'])
     })
