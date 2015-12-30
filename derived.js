@@ -68,13 +68,18 @@ module.exports = class Derived {
   }
 
   _addNewSource (sourceKey, sourceValue) {
+    var nothingEmitted = true
+
     // this will be passed to the user-defined functions as 'this'
     let ctx = {
-      emit: this._emitted.bind(this, sourceKey, sourceValue)
+      emit: (idxKey, idxValue) => {
+        nothingEmitted = false
+        this._emitted(sourceKey, sourceValue, idxKey, idxValue)
+      }
     }
 
     let res = this._fn.call(ctx, sourceKey, sourceValue)
-    if (res) {
+    if (nothingEmitted && res) {
       // returning a value is the same as emitting it, for enabling
       // quick indexes like `src.derived('inverted', (k, v) => [v, k])`
       // or `src.derived('inverted', (k, v) => v)`

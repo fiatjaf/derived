@@ -1,17 +1,5 @@
-Objects with derived indexes!
+"use strict"
 
-[![Build Status](https://travis-ci.org/fiatjaf/derived.svg?branch=master)](https://travis-ci.org/fiatjaf/derived)
-[![NPM Link](https://nodei.co/npm/derived.png)](https://npmjs.com/derived)
-
-## What does it do?
-
-It creates automatic, synchronous and always-updated "views" for your data. You instantiate a main data object and define functions for creating derived indexes on it. Later you can easily access the data on the derived indexes.
-
-It reduces bloat, verbose value getters and automatizes data organization in the context of your app. Perhaps [others](http://www.taffydb.com/) would call this "a database". This name would be misleading, but the power of automatic synchronous subindexes cannot be overstated.
-
-## Example
-
-```javascript
 const assert = require('chai').assert
 const D = require('derived')
 
@@ -88,14 +76,3 @@ assert.deepEqual(data.birthdaysByMonth.getAll(12), ['arthur', 'morgana'])
 /* everything changes synchronously and automatically whenever you update the main data source */
 data.set(`${cityId['atlantis']}.inhabitants.0.birthday`, '01-01')
 assert.equal(data.birthdaysByMonth[1], 'plato')
-```
-
-## Other
-
-* The derivation functions are inspired by [CouchDB](http://docs.couchdb.org/en/1.6.1/). Not equal, though, but the `emit` thing... well, it doesn't matter.
-* The cool setters (`.set`, `.push` etc.) are powered by [object-path](https://www.npmjs.com/package/object-path). There are many more: `.get` with default value, `.insert`, `.del`, `.has`, `.empty`. Their meanings should be straightforward, but please check their documentation for more information.
-* These getters and setters only work on the main data source, the data in derived indexes is read-only and can be accessed through normal Javascript syntax.
-* Other features are planned (please say what would you find more useful):
-  * queryable derived indexes, returning arrays of values sorted by emitted keys
-  * derived indexes based on the entire data object, instead of in each of its keys
-  * leveled derived indexes
