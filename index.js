@@ -73,7 +73,11 @@ module.exports = class Source {
   }
 
   changed (k) {
-    k = k.split('.')[0]
+    try {
+      k = k.split('.')[0]
+    } catch (e) {
+      k = k[0]
+    }
     for (var idxName in this._derived) {
       this.calcDerived(idxName, k)
     }

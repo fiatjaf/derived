@@ -43,8 +43,8 @@ assert.equal(data.cityId['shangri-la'], '#1')
 
 /* add data using super useful methods (you can't use normal methods, it's a Javascript limitation) */
 let cityId = data.cityId
-data.push(`${cityId['avalon']}.inhabitants`, {name: 'arthur', birthday: '12-30'})
-data.push(`${cityId['avalon']}.inhabitants`, {name: 'morgana', birthday: '12-31'})
+data.push([cityId.avalon, 'inhabitants'], {name: 'arthur', birthday: '12-30'})
+data.push([cityId.avalon, 'inhabitants'], {name: 'morgana', birthday: '12-31'})
 
 /* create multiple derived indexes */
 data.derived('personZip', function (cityId, cityData) {

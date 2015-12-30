@@ -219,4 +219,10 @@ describe('basic', function () {
       expect(source.comidas.getAllSources('água')).to.deep.equal([source.get('#43987'), source.get('#92386')])
     })
   })
+
+  describe('example.js', function () {
+    it('runs the example', function () {
+      require('../example.js')
+    })
+  })
 })
