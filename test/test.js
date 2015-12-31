@@ -228,7 +228,7 @@ describe('basic', function () {
       expect(source.comidas.getAllSources('água')).to.deep.equal([source.get('#43987'), source.get('#92386')])
     })
 
-    it('should support everything on an index with array keys', function () {
+    it('should work on an index with array keys', function () {
       source = new D({
         1: 'uva',
         2: 'uva',
@@ -237,9 +237,13 @@ describe('basic', function () {
         5: 'laranja'
       })
       source.derived('everything', (i, name) => [['fruta', name], 1])
-      let f = source.everything
+      expect(source.everything.get(['fruta', 'uva'])).to.equal(1)
+    })
 
-      expect(f.get(['fruta', 'uva'])).to.equal(1)
+    it('should .replace the source contents', function () {
+      source.replace({23: 'pêra', 77: 'maçã'})
+      expect(source.everything.get(['fruta', 'uva'])).to.equal(undefined)
+      expect(source.everything.get(['fruta', 'pêra'])).to.equal(1)
     })
   })
 

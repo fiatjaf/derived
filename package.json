@@ -1,6 +1,6 @@
 {
   "name": "derived",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Instant views and derived indexes for Javascript objects.",
   "main": "index.js",
   "engines": {
