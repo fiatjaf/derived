@@ -36,7 +36,7 @@ describe('basic', function () {
       expect(source.byColor.keys()).to.include.members(['yellow', 'grená'])
     })
 
-    it('the same as above, but emitting undefined', function () {
+    it('the same as above, but emitting undefined and using getSource', function () {
       source = new D()
       source.set('4398756', {name: 'bananas', color: 'yellow'})
       source.set('4985232', {name: 'uvas', color: 'grená'})
@@ -110,6 +110,12 @@ describe('basic', function () {
       })
     })
 
+    it('should get with paths on derived indexes', function () {
+      expect(source.comidas.get('#69472[id]')).to.equal('#69472')
+      expect(source.comidas.get('#69472.nome')).to.equal('pão')
+      expect(source.comidas.get('#69472.ne', 'www')).to.equal('www')
+    })
+
     it('should recalc everything when the function is changed', function () {
       let comidas = source.comidas
       let prevFn = comidas.fn
@@ -170,7 +176,7 @@ describe('basic', function () {
     })
 
     it('should get keys normally just like if getting with .get(key)', function () {
-      expect(source.comidas.get('#84572')).to.equal(source.comidas['#84572'])
+      expect(source.comidas['#84572']).to.equal(source.comidas.get('#84572'))
     })
 
     it('should return a list of all keys for .getAll(key)', function () {
@@ -212,11 +218,28 @@ describe('basic', function () {
       expect(source.comidas.getAll('pão')).to.deep.equal(['sovado', 'francês'])
       expect(source.comidas.getAll('água')).to.deep.equal([undefined, undefined])
       expect(source.comidas.getAll('queijo')).to.deep.equal(['canastra'])
+    })
 
+    it('should return the default when .getting unexisting derived keys', function () {
+      expect(source.comidas.get('água', 36)).to.equal(36)
     })
 
     it('the same for .getAllSources(key)', function () {
       expect(source.comidas.getAllSources('água')).to.deep.equal([source.get('#43987'), source.get('#92386')])
+    })
+
+    it('should support everything on an index with array keys', function () {
+      source = new D({
+        1: 'uva',
+        2: 'uva',
+        3: 'uva',
+        4: 'limão',
+        5: 'laranja'
+      })
+      source.derived('everything', (i, name) => [['fruta', name], 1])
+      let f = source.everything
+
+      expect(f.get(['fruta', 'uva'])).to.equal(1)
     })
   })
 

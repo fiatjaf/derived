@@ -95,11 +95,10 @@ assert.equal(data.birthdaysByMonth[1], 'plato')
 ## Other
 
 * The derivation functions are inspired by [CouchDB](http://docs.couchdb.org/en/1.6.1/). Not equal, though, but the `emit` thing... well, it doesn't matter.
-* The cool setters (`.set`, `.push` etc.) are powered by [object-path](https://www.npmjs.com/package/object-path). There are many more: `.get` with default value, `.insert`, `.del`, `.has`, `.empty`. Their meanings should be straightforward, but please check their documentation for more information.
 * These getters and setters only work on the main data source, the data in derived indexes is read-only and can be accessed through normal Javascript syntax.
 * Other features are planned (please say what would you find more useful):
   * immutable main data source
   * immutable derived indexes
   * queryable derived indexes, returning arrays of values sorted by emitted keys
   * derived indexes based on the entire data object, instead of in each of its keys
-  * leveled derived indexes
+  * derived indexes on sublevels
