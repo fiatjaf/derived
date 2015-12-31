@@ -1,7 +1,9 @@
 "use strict"
 
 const collate = require('pouchdb-collate')
-const O = require('object-path')
+const set = require('set-object-path')
+const get = require('get-object-path')
+const del = require('del-object-path')
 
 const Derived = require('./derived')
 
@@ -16,44 +18,27 @@ module.exports = class Source {
   }
 
   get (k, d) {
-    return O.get(this._raw, k, d)
-  }
-
-  has (k) {
-    return O.has(this._raw, k)
-  }
-
-  coalesce (ks, d) {
-    return O.coalesce(O, this._raw, ks, d)
+    if (!k) return this._raw
+    k = Array.isArray(k) ? k.join('.') : k
+    return get(this._raw, k) || d
   }
 
   set (k, v) {
-    O.set(this._raw, k, v)
+    k = Array.isArray(k) ? k.join('.') : k
+    set(this._raw, k, v)
     this.changed(k)
   }
 
   del (k) {
-    O.del(this._raw, k)
-    this.changed(k)
-  }
-
-  empty (k) {
-    O.empty(k)
-    this.changed(k)
-  }
-
-  insert (k, v, p) {
-    O.insert(this._raw, k, v, p)
+    k = Array.isArray(k) ? k.join('.') : k
+    del(this._raw, k)
     this.changed(k)
   }
 
   push (k, v) {
-    O.push(this._raw, k, v)
-    this.changed(k)
-  }
-
-  ensureExists (k, d) {
-    O.ensureExists(this._raw, k, d)
+    let tmp = this.get(k, [])
+    tmp.push(v)
+    this.set(k, tmp)
     this.changed(k)
   }
 
@@ -74,7 +59,7 @@ module.exports = class Source {
 
   changed (k) {
     try {
-      k = k.split('.')[0]
+      k = k.split(/\]|\[|\./)[0]
     } catch (e) {
       k = k[0]
     }
