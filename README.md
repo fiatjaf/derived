@@ -45,7 +45,7 @@ const data = new D({
   },
   '#4': {
     name: 'avalon',
-    zipcode: 37851,
+    zipcode: 37851
   }
 })
 
@@ -76,20 +76,20 @@ assert.equal(personzip['catherine'], 27498)
 assert.equal(personzip['arthur'], 37851)
 assert.equal(personzip['morgana'], 37851)
 
-/* indexes can be of anything: */
-data.derived('birthdaysByMonth', function (_, city) {
+/* indexes can be of anything (and they don't need names): */
+let birthdaysByMonth = data.derived(function (_, city) {
   if (city.inhabitants) {
     city.inhabitants.forEach(person => {
-      let month = parseInt(person.birthday.split('-')[0])
+      let month = parseInt(person.birthday.split('-')[0], 10)
       this.emit(month, person.name)
     })
   }
 })
-assert.deepEqual(data.birthdaysByMonth.getAll(12), ['arthur', 'morgana'])
+assert.deepEqual(birthdaysByMonth.getAll(12), ['arthur', 'morgana'])
 
 /* everything changes synchronously and automatically whenever you update the main data source */
 data.set(`${cityId['atlantis']}.inhabitants.0.birthday`, '01-01')
-assert.equal(data.birthdaysByMonth[1], 'plato')
+assert.equal(birthdaysByMonth[1], 'plato')
 ```
 
 ## Other

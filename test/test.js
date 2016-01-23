@@ -95,11 +95,12 @@ describe('basic', function () {
         }
       })
 
-      source.derived('comidas', function (k, v) {
+      let comidas = source.derived('comidas', function (k, v) {
         v.comidas.forEach(comida => {
           this.emit(comida.id, comida)
         })
       })
+      expect(source.comidas).to.equal(comidas)
 
       expect(source.comidas.keys()).to.have.length(3)
       expect(source.comidas.keys()).to.include.members(['#84572', '#03813', '#69472'])
@@ -228,6 +229,7 @@ describe('basic', function () {
       expect(source.comidas.getAllSources('água')).to.deep.equal([source.get('#43987'), source.get('#92386')])
     })
 
+    var everythingidx
     it('should work on an index with array keys', function () {
       source = new D({
         1: 'uva',
@@ -236,14 +238,15 @@ describe('basic', function () {
         4: 'limão',
         5: 'laranja'
       })
-      source.derived('everything', (i, name) => [['fruta', name], 1])
-      expect(source.everything.get(['fruta', 'uva'])).to.equal(1)
+      let everything = source.derived((i, name) => [['fruta', name], 1])
+      expect(everything.get(['fruta', 'uva'])).to.equal(1)
+      everythingidx = everything
     })
 
     it('should .replace the source contents', function () {
       source.replace({23: 'pêra', 77: 'maçã'})
-      expect(source.everything.get(['fruta', 'uva'])).to.equal(undefined)
-      expect(source.everything.get(['fruta', 'pêra'])).to.equal(1)
+      expect(everythingidx.get(['fruta', 'uva'])).to.equal(undefined)
+      expect(everythingidx.get(['fruta', 'pêra'])).to.equal(1)
     })
   })
 
