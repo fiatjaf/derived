@@ -18,7 +18,7 @@
     "mapreduce",
     "couchdb"
   ],
-  "author": "Giovanni T. Parra",
+  "author": "fiatjaf",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/fiatjaf/derived/issues"
